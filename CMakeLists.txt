@@ -15,11 +15,19 @@ include_directories(include)
 # Source files
 set(SOURCES
     src/ipc/ipc.c
+    src/cap/cap.c
+    src/sys.c
+    src/console.c
+    src/utils.c
+    src/stdio.c
+    src/crt0.c
 )
 
 # Architecture specific sources
 if(ARCH STREQUAL "riscv64")
-    list(APPEND SOURCES src/arch/riscv64/syscall.S)
+    list(APPEND SOURCES src/arch/riscv64/crt0.S)
+elseif(ARCH STREQUAL "x86_64")
+    list(APPEND SOURCES src/arch/x86_64/crt0.S)
 else()
     message(FATAL_ERROR "Unsupported architecture: ${ARCH}")
 endif()
