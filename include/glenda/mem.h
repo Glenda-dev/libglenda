@@ -1,7 +1,7 @@
 #ifndef GLENDA_MEM_H
 #define GLENDA_MEM_H
 
-#include <stddef.h>
+#include <glenda/stddef.h>
 
 #if defined(__riscv) && (__riscv_xlen == 64)
 #include <glenda/arch/riscv64/mem.h>

@@ -4,18 +4,17 @@ project(libglenda C ASM)
 # Options
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
-# Architecture selection (default to riscv64)
-if(NOT DEFINED ARCH)
-    set(ARCH "riscv64")
-endif()
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # Include directories
 include_directories(include)
 
 # Source files
 set(SOURCES
-    src/ipc/ipc.c
-    src/cap/cap.c
+    src/ipc.c
+    src/cap.c
+    src/ipc.c
     src/sys.c
     src/console.c
     src/utils.c
@@ -39,8 +38,10 @@ add_library(glenda STATIC ${SOURCES})
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(glenda PRIVATE
         -Wall -Wextra -Wno-unused-parameter
-        -fno-builtin -ffreestanding
+        -fno-builtin -ffreestanding -nostdinc
     )
+else()
+    message(FATAL_ERROR "Unknown compiler: ${CMAKE_C_COMPILER_ID}.")
 endif()
 
 # Install rules

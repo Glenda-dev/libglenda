@@ -180,3 +180,26 @@ glenda_error_t glenda_kernel_console_get_char(glenda_cap_ptr_t kernel, char *out
     }
     return err;
 }
+
+glenda_error_t glenda_kernel_console_get_str(glenda_cap_ptr_t kernel, char *buf, size_t buf_size, size_t *out_len)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    utcb_clear(utcb);
+    glenda_error_t err = (glenda_error_t)sys_invoke(kernel, METHOD_KERNEL_CONSOLE_GET_STR, NULL);
+    if (err == GLENDA_SUCCESS)
+    {
+        size_t len = utcb->mrs_regs[0];
+        if (len > buf_size - 1)
+        {
+            len = buf_size - 1;
+        }
+        if (out_len)
+        {
+            *out_len = len;
+        }
+
+        utcb_read(utcb, (uint8_t *)buf, len);
+        buf[len] = '\0';
+    }
+    return err;
+}

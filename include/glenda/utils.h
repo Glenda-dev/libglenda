@@ -1,7 +1,7 @@
 #ifndef GLENDA_UTILS_H
 #define GLENDA_UTILS_H
 
-#include <stddef.h>
+#include <glenda/stddef.h>
 
 size_t glenda_strlen(const char *s);
 void *glenda_memset(void *s, int c, size_t n);

@@ -51,5 +51,6 @@ size_t utcb_available_space(glenda_utcb_t *utcb);
 size_t utcb_available_data(glenda_utcb_t *utcb);
 size_t utcb_write(glenda_utcb_t *utcb, const uint8_t *data, size_t len);
 size_t utcb_read(glenda_utcb_t *utcb, uint8_t *data, size_t len);
+void utcb_clear(glenda_utcb_t *utcb);
 
 #endif

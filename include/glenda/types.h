@@ -1,9 +1,8 @@
 #ifndef GLENDA_TYPES_H
 #define GLENDA_TYPES_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
+#include <glenda/stddef.h>
+#include <glenda/stdint.h>
 
 typedef size_t glenda_cap_ptr_t;
 typedef size_t glenda_badge_t;

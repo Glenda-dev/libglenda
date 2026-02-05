@@ -1,3 +1,4 @@
+
 #include <glenda/ipc.h>
 #include <glenda/utils.h>
 
@@ -45,4 +46,10 @@ size_t utcb_read(glenda_utcb_t *utcb, uint8_t *data, size_t len)
         utcb->head = (utcb->head + 1) % BUFFER_MAX_SIZE;
     }
     return to_read;
+}
+
+void utcb_clear(glenda_utcb_t *utcb)
+{
+    utcb->head = 0;
+    utcb->tail = 0;
 }

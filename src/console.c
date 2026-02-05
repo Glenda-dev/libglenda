@@ -23,47 +23,29 @@ char glenda_getchar(void)
     return c;
 }
 
-// Minimal printf implementation using a local buffer
-// In a real environment, we would use a more robust formatter or link with a minimal libc provider
-int glenda_printf(const char *format, ...)
+char *glenda_gets(char *s, int size)
 {
-    char buf[1024];
-    va_list ap;
-    va_start(ap, format);
-    int ret = glenda_vsnprintf(buf, sizeof(buf), format, ap);
-    va_end(ap);
-    glenda_puts(buf);
-    return ret;
-}
+    if (size <= 0 || !s)
+        return NULL;
 
-// Minimal scanf implementation
-// Note: This is very basic and block-interacts with the console char-by-char
-int glenda_scanf(const char *format, ...)
-{
-    char buf[1024];
-    int i = 0;
-    char c;
+    // Use kernel console input capability
+    size_t len = 0;
+    glenda_error_t err = glenda_kernel_console_get_str(global_kernel_cap, s, size, &len);
 
-    // Read a line (simplistic)
-    while (i < (int)sizeof(buf) - 1)
+    if (err != GLENDA_SUCCESS || len == 0)
     {
-        c = glenda_getchar();
-        if (c == '\n' || c == '\r')
-        {
-            glenda_puts("\n");
-            break;
-        }
-        // Echo
-        char echo[2] = {c, 0};
-        glenda_puts(echo);
-        buf[i++] = c;
+        return NULL; // Error or empty input
     }
-    buf[i] = '\0';
 
-    va_list ap;
-    va_start(ap, format);
-    int ret = glenda_vsnscanf(buf, format, ap);
-    va_end(ap);
+    // Ensure null termination (already handled by get_str, but safe to check)
+    if (len < (size_t)size)
+    {
+        s[len] = '\0';
+    }
+    else
+    {
+        s[size - 1] = '\0';
+    }
 
-    return ret;
+    return s;
 }

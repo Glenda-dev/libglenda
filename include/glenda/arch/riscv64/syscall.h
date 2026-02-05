@@ -1,7 +1,7 @@
 #ifndef GLENDA_ARCH_RISCV64_SYSCALL_H
 #define GLENDA_ARCH_RISCV64_SYSCALL_H
 
-#include <stddef.h>
+#include <glenda/stddef.h>
 
 static inline size_t syscall(size_t cptr, size_t method)
 {

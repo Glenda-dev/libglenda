@@ -1,7 +1,7 @@
 #ifndef GLENDA_SYS_H
 #define GLENDA_SYS_H
 
-#include <stddef.h>
+#include <glenda/stddef.h>
 #include <glenda/error.h>
 
 /**

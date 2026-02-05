@@ -1,7 +1,6 @@
 #ifndef GLENDA_SYSCALL_H
 #define GLENDA_SYSCALL_H
 
-#include <stddef.h>
 #include <glenda/arch.h>
 #include <glenda/cap.h>
 

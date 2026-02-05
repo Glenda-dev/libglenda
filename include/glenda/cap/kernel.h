@@ -6,5 +6,6 @@
 
 glenda_error_t glenda_kernel_console_put_str(glenda_cap_ptr_t kernel, const char *s);
 glenda_error_t glenda_kernel_console_get_char(glenda_cap_ptr_t kernel, char *out_char);
+glenda_error_t glenda_kernel_console_get_str(glenda_cap_ptr_t kernel, char *buf, size_t buf_size, size_t *out_len);
 
 #endif
