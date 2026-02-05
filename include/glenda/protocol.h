@@ -87,6 +87,19 @@
 #define INIT_SERVICE_RESTART 3
 #define INIT_SERVICE_RELOAD 4
 #define INIT_SERVICE_QUERY 5
+#define INIT_GET_CAP 6
+#define INIT_GET_RESOURCE 7
+
+// Init Capabilities
+#define INIT_CAP_CONSOLE 1
+#define INIT_CAP_INITRD 2
+#define INIT_CAP_UNTYPED 3
+#define INIT_CAP_MMIO 4
+#define INIT_CAP_IRQ 5
+
+// Init Resources
+#define INIT_RESOURCE_BOOT_ARGS 1
+#define INIT_RESOURCE_PLATFORM_INFO 2
 
 // ==========================================
 // Kernel / Fault Protocol (0x100)
