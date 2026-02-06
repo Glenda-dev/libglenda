@@ -49,6 +49,7 @@ static inline size_t msg_tag_flags(glenda_msg_tag_t tag)
 size_t utcb_available_space(glenda_utcb_t *utcb);
 size_t utcb_available_data(glenda_utcb_t *utcb);
 size_t utcb_write(glenda_utcb_t *utcb, const uint8_t *data, size_t len);
+size_t utcb_append(glenda_utcb_t *utcb, const uint8_t *data, size_t len);
 size_t utcb_read(glenda_utcb_t *utcb, uint8_t *data, size_t len);
 void utcb_clear(glenda_utcb_t *utcb);
 
