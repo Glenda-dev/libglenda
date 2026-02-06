@@ -45,10 +45,11 @@
 // Process Protocol (0x200)
 // ==========================================
 #define PROC_SPAWN 0x01
-#define PROC_EXIT 0x02
-#define PROC_WAIT 0x03
-#define PROC_KILL 0x04
-#define PROC_FORK 0x05
+#define PROC_EXEC 0x02
+#define PROC_EXIT 0x03
+#define PROC_WAIT 0x04
+#define PROC_KILL 0x05
+#define PROC_FORK 0x06
 
 #define PROC_THREAD_CREATE 0x10
 #define PROC_THREAD_EXIT 0x11
@@ -60,6 +61,8 @@
 
 #define PROC_GET_PID 0x20
 #define PROC_PS 0x21
+
+#define PROC_SPAWN_SERVICE 0x30
 
 // ==========================================
 // Device Protocol (0x300)
