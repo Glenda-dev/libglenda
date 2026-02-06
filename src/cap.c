@@ -203,3 +203,10 @@ glenda_error_t glenda_kernel_console_get_str(glenda_cap_ptr_t kernel, char *buf,
     }
     return err;
 }
+
+glenda_error_t glenda_get_time(glenda_cap_ptr_t kernel)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    glenda_error_t err = (glenda_error_t)sys_invoke(kernel, METHOD_KERNEL_CONSOLE_GET_STR, NULL);
+    return utcb->mrs_regs[0];
+}
