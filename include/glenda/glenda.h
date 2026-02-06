@@ -19,5 +19,6 @@
 #include <glenda/cap/kernel.h>
 #include <glenda/sys.h>
 #include <glenda/console.h>
+#include <glenda/utils/platform.h>
 
 #endif /* GLENDA_H */
