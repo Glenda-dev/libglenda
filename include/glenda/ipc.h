@@ -15,6 +15,7 @@ typedef struct
     glenda_cap_ptr_t cap_transfer;
     glenda_cap_ptr_t recv_window;
     glenda_badge_t badge;
+    size_t head;
     size_t size;
     uint8_t ipc_buffer[BUFFER_MAX_SIZE];
 } glenda_utcb_t;
