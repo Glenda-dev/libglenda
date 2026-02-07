@@ -11,16 +11,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 include_directories(include)
 
 # Source files
-set(SOURCES
-    src/ipc.c
-    src/cap.c
-    src/ipc.c
-    src/sys.c
-    src/console.c
-    src/utils.c
-    src/stdio.c
-    src/crt0.c
-)
+file(GLOB_RECURSE SOURCES src/*.c)
 
 # Architecture specific sources
 if(ARCH STREQUAL "riscv64")

@@ -11,6 +11,6 @@
 #endif
 
 // Helper to invoke a capability
-size_t sys_invoke(glenda_cap_ptr_t cptr, size_t method, size_t *args);
+size_t sys_invoke(glenda_cap_ptr_t cptr, size_t method);
 
 #endif

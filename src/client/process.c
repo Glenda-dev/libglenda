@@ -20,8 +20,11 @@ glenda_error_t process_client_exit(glenda_process_client_t *client, int code)
         return GLENDA_ERR_INVALID_PARAM;
     }
 
-    size_t args[MAX_MRS] = {(size_t)code, 0, 0, 0, 0, 0, 0, 0};
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = (size_t)code;
+    for (int i = 1; i < MAX_MRS; i++)
+        utcb->mrs_regs[i] = 0;
     glenda_msg_tag_t tag = msg_tag_new(PROTO_PROCESS, PROC_EXIT, 0);
 
-    return glenda_endpoint_call(client->endpoint, tag, args);
+    return glenda_endpoint_call(client->endpoint, tag);
 }

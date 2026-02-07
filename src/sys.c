@@ -6,12 +6,14 @@
 size_t glenda_sys_init(void)
 {
 #ifndef GLENDA_BAREMETAL
-    glenda_msg_tag_t tag = msg_tag_new(PROTO_PROCESS, PROC_INIT, 0);
-    size_t args[MAX_MRS] = {0};
-    glenda_error_t err = glenda_endpoint_call(CAP_MON, tag, args);
+    glenda_msg_tag_t tag = msg_tag_new(PROTO_RESOURCE, RESOURCE_SBRK, 0);
+    glenda_utcb_t *utcb = get_utcb();
+    for (int i = 0; i < MAX_MRS; i++)
+        utcb->mrs_regs[i] = 0;
+    glenda_error_t err = glenda_endpoint_call(CAP_MON, tag);
     if (err == GLENDA_SUCCESS)
     {
-        return get_utcb()->mrs_regs[0];
+        return utcb->mrs_regs[0];
     }
 #endif
     return 0;
@@ -21,8 +23,11 @@ void glenda_sys_exit(int code)
 {
 #ifndef GLENDA_BAREMETAL
     glenda_msg_tag_t tag = msg_tag_new(PROTO_PROCESS, PROC_EXIT, 0);
-    size_t args[MAX_MRS] = {(size_t)code, 0, 0, 0, 0, 0, 0, 0};
-    glenda_endpoint_send(CAP_MON, tag, args);
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = (size_t)code;
+    for (int i = 1; i < MAX_MRS; i++)
+        utcb->mrs_regs[i] = 0;
+    glenda_endpoint_send(CAP_MON, tag);
 #endif
     while (1)
     {
@@ -37,12 +42,15 @@ void glenda_sys_exit(int code)
 void *glenda_sys_sbrk(ptrdiff_t increment)
 {
 #ifndef GLENDA_BAREMETAL
-    glenda_msg_tag_t tag = msg_tag_new(PROTO_PROCESS, PROC_SBRK, 0);
-    size_t args[MAX_MRS] = {(size_t)increment, 0, 0, 0, 0, 0, 0, 0};
-    glenda_error_t err = glenda_endpoint_call(CAP_MON, tag, args);
+    glenda_msg_tag_t tag = msg_tag_new(PROTO_RESOURCE, RESOURCE_SBRK, 0);
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = (size_t)increment;
+    for (int i = 1; i < MAX_MRS; i++)
+        utcb->mrs_regs[i] = 0;
+    glenda_error_t err = glenda_endpoint_call(CAP_MON, tag);
     if (err == GLENDA_SUCCESS)
     {
-        size_t old_brk = get_utcb()->mrs_regs[0];
+        size_t old_brk = utcb->mrs_regs[0];
         if (old_brk != 0)
         {
             return (void *)old_brk;
