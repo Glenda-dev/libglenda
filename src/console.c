@@ -12,14 +12,23 @@ void glenda_console_init(glenda_cap_ptr_t kernel_cap)
 
 void glenda_puts(const char *s)
 {
+#ifdef GLENDA_BAREMETAL
+    glenda_kernel_console_put_str(CAP_KERNEL, s);
+#else
     glenda_kernel_console_put_str(global_kernel_cap, s);
+#endif
 }
 
 char glenda_getchar(void)
 {
     char c = 0;
+#ifdef GLENDA_BAREMETAL
+    while (glenda_kernel_console_get_char(CAP_KERNEL, &c) != GLENDA_SUCCESS)
+        ;
+#else
     while (glenda_kernel_console_get_char(global_kernel_cap, &c) != GLENDA_SUCCESS)
         ;
+#endif
     return c;
 }
 
@@ -30,7 +39,11 @@ char *glenda_gets(char *s, int size)
 
     // Use kernel console input capability
     size_t len = 0;
+#ifdef GLENDA_BAREMETAL
+    glenda_error_t err = glenda_kernel_console_get_str(CAP_KERNEL, s, size, &len);
+#else
     glenda_error_t err = glenda_kernel_console_get_str(global_kernel_cap, s, size, &len);
+#endif
 
     if (err != GLENDA_SUCCESS || len == 0)
     {

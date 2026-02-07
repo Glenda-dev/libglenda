@@ -1,0 +1,121 @@
+#include <glenda/client/fs.h>
+#include <glenda/cap/endpoint.h>
+#include <glenda/ipc.h>
+#include <glenda/utils.h>
+
+glenda_error_t fs_client_init(glenda_fs_client_t *client, glenda_cap_ptr_t endpoint)
+{
+    if (!client)
+    {
+        return GLENDA_ERR_INVALID_PARAM;
+    }
+    client->endpoint = endpoint;
+    return GLENDA_SUCCESS;
+}
+
+glenda_error_t fs_client_open(glenda_fs_client_t *client, const char *path, uint32_t flags, uint32_t mode, glenda_cap_ptr_t *out_cap)
+{
+    if (!client || !path || !out_cap)
+    {
+        return GLENDA_ERR_INVALID_PARAM;
+    }
+
+    glenda_utcb_t *utcb = get_utcb();
+    utcb_clear(utcb);
+    size_t path_len = glenda_strlen(path);
+    utcb_write(utcb, (const uint8_t *)path, path_len);
+
+    size_t args[MAX_MRS] = {(size_t)flags, (size_t)mode, 0, 0, 0, 0, 0, 0};
+    glenda_msg_tag_t tag = msg_tag_new(PROTO_FS, FS_OPEN, 0);
+
+    glenda_error_t err = glenda_endpoint_call(client->endpoint, tag, args);
+    if (err == GLENDA_SUCCESS)
+    {
+        *out_cap = (glenda_cap_ptr_t)utcb->mrs_regs[0];
+    }
+    return err;
+}
+
+glenda_error_t fs_client_read(glenda_fs_client_t *client, uint64_t offset, void *buf, size_t size, size_t *out_size)
+{
+    if (!client || !buf || !out_size)
+    {
+        return GLENDA_ERR_INVALID_PARAM;
+    }
+
+    glenda_utcb_t *utcb = get_utcb();
+    utcb_clear(utcb);
+
+    size_t args[MAX_MRS] = {size, (size_t)offset, 0, 0, 0, 0, 0, 0};
+    glenda_msg_tag_t tag = msg_tag_new(PROTO_FS, FS_READ, 0);
+
+    glenda_error_t err = glenda_endpoint_call(client->endpoint, tag, args);
+    if (err == GLENDA_SUCCESS)
+    {
+        size_t read_len = utcb->size;
+        if (read_len > size)
+        {
+            read_len = size;
+        }
+        glenda_memcpy(buf, utcb->ipc_buffer, read_len);
+        *out_size = read_len;
+    }
+    return err;
+}
+
+glenda_error_t fs_client_write(glenda_fs_client_t *client, uint64_t offset, const void *buf, size_t size, size_t *out_size)
+{
+    if (!client || !buf || !out_size)
+    {
+        return GLENDA_ERR_INVALID_PARAM;
+    }
+
+    glenda_utcb_t *utcb = get_utcb();
+    utcb_clear(utcb);
+
+    // Respect UTCB buffer limits
+    size_t to_write = size > BUFFER_MAX_SIZE ? BUFFER_MAX_SIZE : size;
+    utcb_write(utcb, (const uint8_t *)buf, to_write);
+
+    size_t args[MAX_MRS] = {to_write, (size_t)offset, 0, 0, 0, 0, 0, 0};
+    glenda_msg_tag_t tag = msg_tag_new(PROTO_FS, FS_WRITE, 0);
+
+    glenda_error_t err = glenda_endpoint_call(client->endpoint, tag, args);
+    if (err == GLENDA_SUCCESS)
+    {
+        *out_size = utcb->mrs_regs[0];
+    }
+    return err;
+}
+
+glenda_error_t fs_client_close(glenda_fs_client_t *client)
+{
+    if (!client)
+    {
+        return GLENDA_ERR_INVALID_PARAM;
+    }
+
+    size_t args[MAX_MRS] = {0};
+    glenda_msg_tag_t tag = msg_tag_new(PROTO_FS, FS_CLOSE, 0);
+
+    return glenda_endpoint_call(client->endpoint, tag, args);
+}
+
+glenda_error_t fs_client_seek(glenda_fs_client_t *client, int64_t offset, int whence, uint64_t *out_offset)
+{
+    if (!client || !out_offset)
+    {
+        return GLENDA_ERR_INVALID_PARAM;
+    }
+
+    glenda_utcb_t *utcb = get_utcb();
+    size_t args[MAX_MRS] = {(size_t)offset, (size_t)whence, 0, 0, 0, 0, 0, 0};
+    glenda_msg_tag_t tag = msg_tag_new(PROTO_FS, FS_SEEK, 0);
+
+    glenda_error_t err = glenda_endpoint_call(client->endpoint, tag, args);
+    if (err == GLENDA_SUCCESS)
+    {
+        *out_offset = (uint64_t)utcb->mrs_regs[0];
+    }
+    return err;
+}
