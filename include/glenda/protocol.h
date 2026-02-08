@@ -60,9 +60,9 @@
 #define PROC_SLEEP 0x16
 
 #define PROC_GET_PID 0x20
-#define PROC_PS 0x21
+#define PROC_GET_PPID 0x21
 
-#define PROC_SPAWN_SERVICE 0x30
+#define PROC_GET_CNODE 0x30
 
 // ==========================================
 // Device Protocol (0x300)
