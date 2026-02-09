@@ -4,7 +4,7 @@
 
 size_t utcb_available_space(glenda_utcb_t *utcb)
 {
-    return BUFFER_MAX_SIZE - utcb->size;
+    return IPC_BUFFER_SIZE - utcb->size;
 }
 
 size_t utcb_available_data(glenda_utcb_t *utcb)
@@ -14,7 +14,7 @@ size_t utcb_available_data(glenda_utcb_t *utcb)
 
 size_t utcb_write(glenda_utcb_t *utcb, const uint8_t *data, size_t len)
 {
-    size_t to_write = len < BUFFER_MAX_SIZE ? len : BUFFER_MAX_SIZE;
+    size_t to_write = len < IPC_BUFFER_SIZE ? len : IPC_BUFFER_SIZE;
 
     for (size_t i = 0; i < to_write; i++)
     {

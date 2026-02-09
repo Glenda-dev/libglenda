@@ -80,7 +80,7 @@ glenda_error_t fs_client_write(glenda_fs_client_t *client, uint64_t offset, cons
     utcb_clear(utcb);
 
     // Respect UTCB buffer limits
-    size_t to_write = size > BUFFER_MAX_SIZE ? BUFFER_MAX_SIZE : size;
+    size_t to_write = size > IPC_BUFFER_SIZE ? IPC_BUFFER_SIZE : size;
     utcb_write(utcb, (const uint8_t *)buf, to_write);
 
     utcb->mrs_regs[0] = to_write;

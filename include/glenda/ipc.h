@@ -6,7 +6,7 @@
 #include <glenda/mem.h>
 
 #define MAX_MRS 8
-#define BUFFER_MAX_SIZE (3 * 1024)
+#define IPC_BUFFER_SIZE (3 * 1024)
 
 typedef struct
 {
@@ -17,7 +17,7 @@ typedef struct
     glenda_badge_t badge;
     size_t head;
     size_t size;
-    uint8_t ipc_buffer[BUFFER_MAX_SIZE];
+    uint8_t ipc_buffer[IPC_BUFFER_SIZE];
 } glenda_utcb_t;
 
 static inline glenda_utcb_t *get_utcb(void)

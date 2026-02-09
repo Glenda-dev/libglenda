@@ -128,32 +128,29 @@ glenda_error_t glenda_vspace_map_table(glenda_cap_ptr_t vspace, glenda_cap_ptr_t
     return (glenda_error_t)sys_invoke(vspace, METHOD_VSPACE_MAP_TABLE);
 }
 
-glenda_error_t glenda_endpoint_send(glenda_cap_ptr_t endpoint, glenda_msg_tag_t msg_info)
+glenda_error_t glenda_endpoint_send(glenda_cap_ptr_t endpoint)
 {
-    glenda_utcb_t *utcb = get_utcb();
-    utcb->msg_tag = msg_info;
     return (glenda_error_t)sys_invoke(endpoint, METHOD_IPC_SEND);
 }
 
-glenda_error_t glenda_endpoint_recv(glenda_cap_ptr_t endpoint, glenda_cap_ptr_t reply_slot)
+glenda_error_t glenda_endpoint_recv(glenda_cap_ptr_t endpoint)
 {
-    glenda_utcb_t *utcb = get_utcb();
-    utcb->recv_window = reply_slot;
     return (glenda_error_t)sys_invoke(endpoint, METHOD_IPC_RECV);
 }
 
-glenda_error_t glenda_endpoint_call(glenda_cap_ptr_t endpoint, glenda_msg_tag_t msg_info)
+glenda_error_t glenda_endpoint_call(glenda_cap_ptr_t endpoint)
 {
-    glenda_utcb_t *utcb = get_utcb();
-    utcb->msg_tag = msg_info;
     return (glenda_error_t)sys_invoke(endpoint, METHOD_IPC_CALL);
 }
 
-glenda_error_t glenda_endpoint_notify(glenda_cap_ptr_t endpoint, size_t badge)
+glenda_error_t glenda_endpoint_notify(glenda_cap_ptr_t endpoint)
 {
-    glenda_utcb_t *utcb = get_utcb();
-    utcb->mrs_regs[0] = badge;
     return (glenda_error_t)sys_invoke(endpoint, METHOD_IPC_NOTIFY);
+}
+
+glenda_error_t glenda_reply(glenda_cap_ptr_t reply)
+{
+    return (glenda_error_t)sys_invoke(reply, METHOD_REPLY);
 }
 
 glenda_error_t glenda_irq_set_notification(glenda_cap_ptr_t irq_handler, glenda_cap_ptr_t notification)
