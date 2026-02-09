@@ -163,3 +163,11 @@
 #define RESOURCE_MMAP 0x13
 #define RESOURCE_MUNMAP 0x14
 #define RESOURCE_SBRK 0x15
+
+// ==========================================
+// Generic Protocol (0x000)
+// ==========================================
+#define GENERIC_REPLY 0x01
+#define GENERIC_PING 0x02
+#define GENERIC_SHARE_MEMORY 0x03
+#define GENERIC_SEND_MESSAGE 0x04
