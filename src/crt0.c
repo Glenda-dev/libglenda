@@ -4,8 +4,6 @@
 #include <glenda/cap/endpoint.h>
 #include <glenda/sys.h>
 
-extern char __bss_start[];
-extern char __bss_end[];
 extern int main(int argc, char **argv);
 
 // Simple memset for BSS clearing
@@ -19,19 +17,14 @@ static void *local_memset(void *s, int c, size_t n)
 
 void glenda_start(void)
 {
-    // 1. Clear BSS
-    size_t bss_len = (size_t)__bss_end - (size_t)__bss_start;
-    local_memset(__bss_start, 0, bss_len);
+    // 1. Initialize process environment
+    int init_ret = glenda_sys_init();
+    if (init_ret != 0)
+        glenda_sys_exit(__UINT64_MAX__);
 
-    // 2. Initialize process environment
-    glenda_sys_init();
-
-    // 3. Initialize console
-    glenda_console_init(CAP_KERNEL);
-
-    // 4. Call main
+    // 2. Call main
     int ret = main(0, NULL);
 
-    // 5. Exit
+    // 3. Exit
     glenda_sys_exit(ret);
 }

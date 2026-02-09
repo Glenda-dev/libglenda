@@ -36,6 +36,7 @@ typedef enum
     CAP_RIGHTS_RECV = 1 << 4,
     CAP_RIGHTS_CALL = 1 << 5,
     CAP_RIGHTS_EXECUTE = 1 << 6,
+    CAP_RIGHTS_CUSTOM = 1 << 7,
     CAP_RIGHTS_ALL = 0xFF,
 } glenda_cap_rights_t;
 

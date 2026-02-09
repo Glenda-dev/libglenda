@@ -148,6 +148,11 @@ glenda_error_t glenda_endpoint_notify(glenda_cap_ptr_t endpoint)
     return (glenda_error_t)sys_invoke(endpoint, METHOD_IPC_NOTIFY);
 }
 
+glenda_error_t glenda_endpoint_proxy(glenda_cap_ptr_t endpoint)
+{
+    return (glenda_error_t)sys_invoke(endpoint, METHOD_IPC_NOTIFY);
+}
+
 glenda_error_t glenda_reply(glenda_cap_ptr_t reply)
 {
     return (glenda_error_t)sys_invoke(reply, METHOD_REPLY);

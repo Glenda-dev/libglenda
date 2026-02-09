@@ -6,6 +6,7 @@
 #define METHOD_IPC_RECV 2
 #define METHOD_IPC_CALL 3
 #define METHOD_IPC_NOTIFY 4
+#define METHOD_IPC_FORWARD 5
 
 // Reply
 #define METHOD_REPLY 1
