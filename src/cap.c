@@ -165,6 +165,20 @@ glenda_error_t glenda_irq_set_notification(glenda_cap_ptr_t irq_handler, glenda_
     return (glenda_error_t)sys_invoke(irq_handler, METHOD_IRQ_SET_NOTIFICATION);
 }
 
+glenda_error_t glenda_irq_clear_notification(glenda_cap_ptr_t irq_handler)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    return (glenda_error_t)sys_invoke(irq_handler, METHOD_IRQ_CLEAR_NOTIFICATION);
+}
+
+glenda_error_t glenda_irq_set_priority(glenda_cap_ptr_t irq_handler, size_t prio)
+{
+
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = prio;
+    return (glenda_error_t)sys_invoke(irq_handler, METHOD_IRQ_SET_PRIORITY);
+}
+
 glenda_error_t glenda_irq_ack(glenda_cap_ptr_t irq_handler)
 {
     return (glenda_error_t)sys_invoke(irq_handler, METHOD_IRQ_ACK);

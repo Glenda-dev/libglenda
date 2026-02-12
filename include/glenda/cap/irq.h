@@ -5,6 +5,8 @@
 #include <glenda/error.h>
 
 glenda_error_t glenda_irq_set_notification(glenda_cap_ptr_t irq_handler, glenda_cap_ptr_t notification);
+glenda_error_t glenda_irq_clear_notification(glenda_cap_ptr_t irq_handler);
+glenda_error_t glenda_irq_set_priority(glenda_cap_ptr_t irq_handler, size_t prio);
 glenda_error_t glenda_irq_ack(glenda_cap_ptr_t irq_handler);
 
 #endif
