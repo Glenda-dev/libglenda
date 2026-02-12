@@ -8,12 +8,18 @@
 #define MAX_MRS 8
 #define IPC_BUFFER_SIZE (3 * 1024)
 
+#define MSG_FLAG_NONE 0x0
+#define MSG_FLAG_HAS_CAP 0x1
+#define MSG_FLAG_HAS_BUFFER 0x2
+#define MSG_FLAG_NON_BLOCKING 0x4
+
 typedef struct
 {
     glenda_msg_tag_t msg_tag;
     size_t mrs_regs[MAX_MRS];
     glenda_cap_ptr_t cap_transfer;
     glenda_cap_ptr_t recv_window;
+    glenda_cap_ptr_t reply_window;
     glenda_badge_t badge;
     size_t head;
     size_t size;

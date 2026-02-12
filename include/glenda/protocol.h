@@ -10,9 +10,11 @@
 #define PROTO_INIT 0x0500
 #define PROTO_FS 0x0600
 #define PROTO_NETWORK 0x0700
+#define PROTO_AUTH 0x0800
+#define PROTO_LINUX 0x0900
 
 // ==========================================
-// FS Protocol (0x500)
+// FS Protocol (0x600)
 // ==========================================
 
 // Namespace Operations
@@ -31,6 +33,38 @@
 #define FS_SEEK 0x15
 #define FS_SYNC 0x16
 #define FS_TRUNCATE 0x17
+
+// Pipe Operations
+#define FS_PIPE 0x20
+
+typedef struct
+{
+    uint64_t dev;
+    uint64_t ino;
+    uint32_t mode;
+    uint32_t nlink;
+    uint32_t uid;
+    uint32_t gid;
+    uint64_t size;
+    int64_t atime_sec;
+    int64_t atime_nsec;
+    int64_t mtime_sec;
+    int64_t mtime_nsec;
+    int64_t ctime_sec;
+    int64_t ctime_nsec;
+    int64_t blksize;
+    int64_t blocks;
+} glenda_stat_t;
+
+typedef struct
+{
+    uint64_t ino;
+    uint64_t off;
+    uint16_t reclen;
+    uint8_t type;
+    char name[256];
+} glenda_dentry_t;
+
 // Open Flags (Octal for traditional compat, but defined as hex/dec here)
 #define O_RDONLY 00
 #define O_WRONLY 01
@@ -65,20 +99,21 @@
 #define PROC_GET_CNODE 0x30
 
 // ==========================================
-// Device Protocol (0x300)
+// Device Protocol (0x400)
 // ==========================================
-#define PROTO_DEVICE_PCI 0x301
-#define PROTO_DEVICE_IOMMU 0x302
-#define PROTO_DEVICE_UART 0x303
+#define DEVICE_GET_DESC 0x01
+#define DEVICE_GET_MMIO 0x02
+#define DEVICE_GET_IRQ 0x03
+#define DEVICE_SCAN_PLATFORM 0x04
 
-// UART Methods
+// UART Methods (Specific labels for UART devices)
 #define UART_PUT_CHAR 0x01
 #define UART_GET_CHAR 0x02
 #define UART_PUT_STR 0x03
 #define UART_SET_BAUD 0x04
 
 // ==========================================
-// Init Protocol (0x400)
+// Init Protocol (0x500)
 // ==========================================
 #define INIT_SERVICE_START 0x01
 #define INIT_SERVICE_STOP 0x02
@@ -115,8 +150,6 @@
 #define FAULT_UNKNOWN_FAULT 0x07
 #define FAULT_IRQ 0x08
 
-#endif
-
 // ==========================================
 // Network Protocol (0x700)
 // ==========================================
@@ -151,18 +184,43 @@
 #define IPPROTO_RAW 255
 
 // ==========================================
+// Auth Protocol (0x800)
+// ==========================================
+#define AUTH_RPC 0x01
+#define AUTH_GET_TICKET 0x02
+#define AUTH_LOGOUT 0x03
+#define AUTH_PROXY_CALL 0x04
+#define AUTH_GET_IDENTITY 0x10
+#define AUTH_SET_IDENTITY 0x11
+#define AUTH_SET_GROUPS 0x12
+
+// ==========================================
 // Resource Protocol (0x300)
 // ==========================================
-#define RESOURCE_ALLOCATE 0x01
+#define RESOURCE_ALLOC 0x01
 #define RESOURCE_FREE 0x02
-#define RESOURCE_GETRESOURCE 0x03
-#define RESOURCE_GETCAP 0x04
+#define RESOURCE_DMA_ALLOC 0x03
 #define RESOURCE_MAP 0x10
 #define RESOURCE_UNMAP 0x11
 #define RESOURCE_CLONE 0x12
-#define RESOURCE_MMAP 0x13
-#define RESOURCE_MUNMAP 0x14
-#define RESOURCE_SBRK 0x15
+#define RESOURCE_MMAP 0x20
+#define RESOURCE_MUNMAP 0x21
+#define RESOURCE_SBRK 0x22
+#define RESOURCE_GETCAP 0x30
+#define RESOURCE_REGISTER_CAP 0x31
+#define RESOURCE_GET_CONFIG 0x32
+
+typedef enum
+{
+    RESOURCE_TYPE_UNKNOWN = 0,
+    RESOURCE_TYPE_KERNEL = 1,
+    RESOURCE_TYPE_UNTYPED = 2,
+    RESOURCE_TYPE_BOOTINFO = 3,
+    RESOURCE_TYPE_MMIO = 4,
+    RESOURCE_TYPE_IRQ = 5,
+    RESOURCE_TYPE_PLATFORM = 6,
+    RESOURCE_TYPE_ENDPOINT = 7,
+} glenda_resource_type_t;
 
 // ==========================================
 // Generic Protocol (0x000)
@@ -171,3 +229,5 @@
 #define GENERIC_PING 0x02
 #define GENERIC_SHARE_MEMORY 0x03
 #define GENERIC_SEND_MESSAGE 0x04
+
+#endif /* GLENDA_PROTOCOL_H */

@@ -25,6 +25,7 @@ glenda_error_t process_client_exit(glenda_process_client_t *client, int code)
     for (int i = 1; i < MAX_MRS; i++)
         utcb->mrs_regs[i] = 0;
     glenda_msg_tag_t tag = msg_tag_new(PROTO_PROCESS, PROC_EXIT, 0);
+    utcb->msg_tag = tag;
 
-    return glenda_endpoint_call(client->endpoint, tag);
+    return glenda_endpoint_call(client->endpoint);
 }

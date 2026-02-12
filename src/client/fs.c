@@ -30,8 +30,9 @@ glenda_error_t fs_client_open(glenda_fs_client_t *client, const char *path, uint
     for (int i = 2; i < MAX_MRS; i++)
         utcb->mrs_regs[i] = 0;
     glenda_msg_tag_t tag = msg_tag_new(PROTO_FS, FS_OPEN, 0);
+    utcb->msg_tag = tag;
 
-    glenda_error_t err = glenda_endpoint_call(client->endpoint, tag);
+    glenda_error_t err = glenda_endpoint_call(client->endpoint);
     if (err == GLENDA_SUCCESS)
     {
         *out_cap = (glenda_cap_ptr_t)utcb->mrs_regs[0];
@@ -54,8 +55,9 @@ glenda_error_t fs_client_read(glenda_fs_client_t *client, uint64_t offset, void 
     for (int i = 2; i < MAX_MRS; i++)
         utcb->mrs_regs[i] = 0;
     glenda_msg_tag_t tag = msg_tag_new(PROTO_FS, FS_READ, 0);
+    utcb->msg_tag = tag;
 
-    glenda_error_t err = glenda_endpoint_call(client->endpoint, tag);
+    glenda_error_t err = glenda_endpoint_call(client->endpoint);
     if (err == GLENDA_SUCCESS)
     {
         size_t read_len = utcb->size;
@@ -88,8 +90,9 @@ glenda_error_t fs_client_write(glenda_fs_client_t *client, uint64_t offset, cons
     for (int i = 2; i < MAX_MRS; i++)
         utcb->mrs_regs[i] = 0;
     glenda_msg_tag_t tag = msg_tag_new(PROTO_FS, FS_WRITE, 0);
+    utcb->msg_tag = tag;
 
-    glenda_error_t err = glenda_endpoint_call(client->endpoint, tag);
+    glenda_error_t err = glenda_endpoint_call(client->endpoint);
     if (err == GLENDA_SUCCESS)
     {
         *out_size = utcb->mrs_regs[0];
@@ -108,8 +111,9 @@ glenda_error_t fs_client_close(glenda_fs_client_t *client)
     for (int i = 0; i < MAX_MRS; i++)
         utcb->mrs_regs[i] = 0;
     glenda_msg_tag_t tag = msg_tag_new(PROTO_FS, FS_CLOSE, 0);
+    utcb->msg_tag = tag;
 
-    return glenda_endpoint_call(client->endpoint, tag);
+    return glenda_endpoint_call(client->endpoint);
 }
 
 glenda_error_t fs_client_seek(glenda_fs_client_t *client, int64_t offset, int whence, uint64_t *out_offset)
@@ -125,8 +129,9 @@ glenda_error_t fs_client_seek(glenda_fs_client_t *client, int64_t offset, int wh
     for (int i = 2; i < MAX_MRS; i++)
         utcb->mrs_regs[i] = 0;
     glenda_msg_tag_t tag = msg_tag_new(PROTO_FS, FS_SEEK, 0);
+    utcb->msg_tag = tag;
 
-    glenda_error_t err = glenda_endpoint_call(client->endpoint, tag);
+    glenda_error_t err = glenda_endpoint_call(client->endpoint);
     if (err == GLENDA_SUCCESS)
     {
         *out_offset = (uint64_t)utcb->mrs_regs[0];

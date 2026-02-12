@@ -2,6 +2,7 @@
 #include <glenda/ipc.h>
 #include <glenda/protocol.h>
 #include <glenda/cap/endpoint.h>
+#include <glenda/console.h>
 
 size_t glenda_sys_init(void)
 {
