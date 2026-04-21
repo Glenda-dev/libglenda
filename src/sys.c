@@ -1,4 +1,5 @@
 #include <glenda/sys.h>
+#include <glenda/syscall.h>
 #include <glenda/ipc.h>
 #include <glenda/protocol.h>
 #include <glenda/cap/endpoint.h>
@@ -20,6 +21,26 @@ size_t glenda_sys_init(void)
 #endif
     glenda_console_init(CAP_KERNEL);
     return 0;
+}
+
+size_t sys_invoke_ipc(glenda_cap_ptr_t cptr, size_t method, glenda_utcb_t *utcb)
+{
+    size_t msgtag = utcb->msg_tag.raw;
+    size_t badge = utcb->badge;
+    size_t mrs[4] = {
+        utcb->mrs_regs[0],
+        utcb->mrs_regs[1],
+        utcb->mrs_regs[2],
+        utcb->mrs_regs[3],
+    };
+    size_t ret = syscall_ipc(cptr, method, &msgtag, &badge, mrs);
+    utcb->msg_tag.raw = msgtag;
+    utcb->badge = badge;
+    utcb->mrs_regs[0] = mrs[0];
+    utcb->mrs_regs[1] = mrs[1];
+    utcb->mrs_regs[2] = mrs[2];
+    utcb->mrs_regs[3] = mrs[3];
+    return ret;
 }
 
 void glenda_sys_exit(int code)

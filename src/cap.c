@@ -53,6 +53,16 @@ glenda_error_t glenda_cnode_debug_print(glenda_cap_ptr_t cnode)
     return (glenda_error_t)sys_invoke(cnode, METHOD_CNODE_DEBUG_PRINT);
 }
 
+glenda_error_t glenda_cnode_mint_self(glenda_cap_ptr_t cnode, glenda_cap_ptr_t src, glenda_cap_ptr_t dest, glenda_badge_t badge, glenda_cap_rights_t rights)
+{
+    return glenda_cnode_mint(cnode, src, dest, badge, rights);
+}
+
+glenda_error_t glenda_cnode_copy_self(glenda_cap_ptr_t cnode, glenda_cap_ptr_t src, glenda_cap_ptr_t dest, glenda_cap_rights_t rights)
+{
+    return glenda_cnode_copy(cnode, src, dest, rights);
+}
+
 glenda_error_t glenda_untyped_retype(glenda_cap_ptr_t untyped, glenda_cap_type_t type, size_t size_bits, glenda_cap_ptr_t root, size_t node_index, size_t node_depth, size_t node_offset, size_t num_caps)
 {
     glenda_utcb_t *utcb = get_utcb();
@@ -91,6 +101,58 @@ glenda_error_t glenda_tcb_set_entrypoint(glenda_cap_ptr_t tcb, size_t entrypoint
     utcb->mrs_regs[1] = stack;
     utcb->mrs_regs[2] = arg;
     return (glenda_error_t)sys_invoke(tcb, METHOD_TCB_SET_ENTRYPOINT);
+}
+
+glenda_error_t glenda_tcb_set_address(glenda_cap_ptr_t tcb, size_t utcb_va, size_t trapframe_va)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = utcb_va;
+    utcb->mrs_regs[1] = trapframe_va;
+    return (glenda_error_t)sys_invoke(tcb, METHOD_TCB_SET_ADDRESS);
+}
+
+glenda_error_t glenda_tcb_set_fault_handler(glenda_cap_ptr_t tcb, glenda_cap_ptr_t fault_handler)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = fault_handler;
+    return (glenda_error_t)sys_invoke(tcb, METHOD_TCB_SET_FAULT_HANDLER);
+}
+
+glenda_error_t glenda_tcb_set_registers(glenda_cap_ptr_t tcb, const size_t *regs, size_t count)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    for (size_t i = 0; i < count && i < MAX_MRS; i++) utcb->mrs_regs[i] = regs[i];
+    return (glenda_error_t)sys_invoke(tcb, METHOD_TCB_SET_REGISTERS);
+}
+
+glenda_error_t glenda_tcb_yield(glenda_cap_ptr_t tcb)
+{
+    return (glenda_error_t)sys_invoke(tcb, METHOD_TCB_YIELD);
+}
+
+glenda_error_t glenda_tcb_set_timeslice(glenda_cap_ptr_t tcb, size_t timeslice_ms)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = timeslice_ms;
+    return (glenda_error_t)sys_invoke(tcb, METHOD_TCB_SET_TIMESLICE);
+}
+
+glenda_error_t glenda_tcb_fork_from(glenda_cap_ptr_t tcb, glenda_cap_ptr_t parent)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = parent;
+    return (glenda_error_t)sys_invoke(tcb, METHOD_TCB_FORK_FROM);
+}
+
+glenda_error_t glenda_tcb_deliver_upcall(glenda_cap_ptr_t tcb, size_t handler, size_t arg0, size_t arg1, size_t arg2, size_t arg3)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = handler;
+    utcb->mrs_regs[1] = arg0;
+    utcb->mrs_regs[2] = arg1;
+    utcb->mrs_regs[3] = arg2;
+    utcb->mrs_regs[4] = arg3;
+    return (glenda_error_t)sys_invoke(tcb, METHOD_TCB_DELIVER_UPCALL);
 }
 
 glenda_error_t glenda_tcb_resume(glenda_cap_ptr_t tcb)
@@ -184,6 +246,14 @@ glenda_error_t glenda_irq_ack(glenda_cap_ptr_t irq_handler)
     return (glenda_error_t)sys_invoke(irq_handler, METHOD_IRQ_ACK);
 }
 
+glenda_error_t glenda_irq_set_threshold(glenda_cap_ptr_t irq_handler, size_t cpu, size_t threshold)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = cpu;
+    utcb->mrs_regs[1] = threshold;
+    return (glenda_error_t)sys_invoke(irq_handler, METHOD_IRQ_SET_THRESHOLD);
+}
+
 glenda_error_t glenda_kernel_console_put_str(glenda_cap_ptr_t kernel, const char *s)
 {
     glenda_utcb_t *utcb = get_utcb();
@@ -250,4 +320,50 @@ glenda_error_t glenda_get_time(glenda_cap_ptr_t kernel, size_t *out)
         *out = utcb->mrs_regs[0];
     }
     return err;
+}
+
+glenda_error_t glenda_kernel_shell(glenda_cap_ptr_t kernel)
+{
+    return (glenda_error_t)sys_invoke(kernel, METHOD_KERNEL_SHELL);
+}
+
+glenda_error_t glenda_kernel_get_irq(glenda_cap_ptr_t kernel, size_t irq, glenda_cap_ptr_t dest_cptr)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = irq;
+    utcb->mrs_regs[1] = dest_cptr;
+    return (glenda_error_t)sys_invoke(kernel, METHOD_KERNEL_GET_IRQ);
+}
+
+glenda_error_t glenda_kernel_get_mmio(glenda_cap_ptr_t kernel, size_t paddr, size_t pages, glenda_cap_ptr_t dest_cptr)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = paddr;
+    utcb->mrs_regs[1] = pages;
+    utcb->mrs_regs[2] = dest_cptr;
+    return (glenda_error_t)sys_invoke(kernel, METHOD_KERNEL_GET_MMIO);
+}
+
+glenda_error_t glenda_kernel_set_alarm(glenda_cap_ptr_t kernel, size_t ticks, glenda_cap_ptr_t ntfn_cptr)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = ticks;
+    utcb->mrs_regs[1] = ntfn_cptr;
+    return (glenda_error_t)sys_invoke(kernel, METHOD_KERNEL_SET_ALARM);
+}
+
+glenda_error_t glenda_kernel_get_freq(glenda_cap_ptr_t kernel, size_t *out_freq)
+{
+    if (!out_freq) return GLENDA_ERR_INVALID_PARAM;
+    glenda_utcb_t *utcb = get_utcb();
+    glenda_error_t err = (glenda_error_t)sys_invoke(kernel, METHOD_KERNEL_GET_FREQ);
+    if (err == GLENDA_SUCCESS) *out_freq = utcb->mrs_regs[0];
+    return err;
+}
+
+glenda_error_t glenda_kernel_system_reset(glenda_cap_ptr_t kernel, size_t reset_type)
+{
+    glenda_utcb_t *utcb = get_utcb();
+    utcb->mrs_regs[0] = reset_type;
+    return (glenda_error_t)sys_invoke(kernel, METHOD_KERNEL_SYSTEM_RESET);
 }

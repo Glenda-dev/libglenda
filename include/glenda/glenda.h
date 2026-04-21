@@ -17,6 +17,17 @@
 #include <glenda/cap/endpoint.h>
 #include <glenda/cap/irq.h>
 #include <glenda/cap/kernel.h>
+#include <glenda/client/auth.h>
+#include <glenda/client/device.h>
+#include <glenda/client/fs.h>
+#include <glenda/client/generic.h>
+#include <glenda/client/init.h>
+#include <glenda/client/network.h>
+#include <glenda/client/process.h>
+#include <glenda/client/resource.h>
+#include <glenda/client/terminal.h>
+#include <glenda/client/time.h>
+#include <glenda/client/volume.h>
 #include <glenda/sys.h>
 #include <glenda/console.h>
 #include <glenda/utils/platform.h>

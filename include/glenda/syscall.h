@@ -3,6 +3,7 @@
 
 #include <glenda/arch.h>
 #include <glenda/cap.h>
+#include <glenda/ipc.h>
 
 #if defined(GLENDA_ARCH_RISCV64)
 #include <glenda/arch/riscv64/syscall.h>
@@ -12,5 +13,6 @@
 
 // Helper to invoke a capability
 size_t sys_invoke(glenda_cap_ptr_t cptr, size_t method);
+size_t sys_invoke_ipc(glenda_cap_ptr_t cptr, size_t method, glenda_utcb_t *utcb);
 
 #endif

@@ -11,7 +11,11 @@
 #define PROTO_FS 0x0600
 #define PROTO_NETWORK 0x0700
 #define PROTO_AUTH 0x0800
-#define PROTO_LINUX 0x0900
+#define PROTO_VOLUME 0x0900
+#define PROTO_TIME 0x0A00
+#define PROTO_TERMINAL 0x0B00
+#define PROTO_INPUT 0x0C00
+#define PROTO_LINUX 0x0D00
 
 // ==========================================
 // FS Protocol (0x600)
@@ -21,21 +25,37 @@
 #define FS_OPEN 0x01
 #define FS_MKDIR 0x02
 #define FS_UNLINK 0x03
-#define FS_RENAME 0x04
-#define FS_STAT_PATH 0x05
+#define FS_STAT_PATH 0x04
+#define FS_RENAME 0x05
+#define FS_LSTAT_PATH 0x06
+#define FS_READLINK_PATH 0x07
+#define FS_LINK 0x08
 
 // File Handle Operations
-#define FS_READ 0x10
-#define FS_WRITE 0x11
-#define FS_CLOSE 0x12
-#define FS_STAT 0x13
-#define FS_GETDENTS 0x14
-#define FS_SEEK 0x15
+#define FS_CLOSE 0x10
+#define FS_STAT 0x11
+#define FS_SETATTR 0x12
+#define FS_READ 0x13
+#define FS_WRITE 0x14
+#define FS_GETDENTS 0x15
 #define FS_SYNC 0x16
-#define FS_TRUNCATE 0x17
+#define FS_SEEK 0x17
+#define FS_TRUNCATE 0x18
+#define FS_IOCTL 0x19
+#define FS_SETUP_IOURING 0x20
+#define FS_PROCESS_IOURING 0x21
+#define FS_MAP_PAGE 0x22
+#define FS_UNMAP_PAGE 0x23
+#define FS_IOCTL_EX 0x24
 
 // Pipe Operations
-#define FS_PIPE 0x20
+#define FS_PIPE 0x30
+
+// Virtual Filesystem Operations
+#define FS_MOUNT 0x40
+#define FS_UNMOUNT 0x41
+#define FS_CREATE_VIEW 0x42
+#define FS_SET_VIEW 0x43
 
 typedef struct
 {
@@ -186,13 +206,125 @@ typedef struct
 // ==========================================
 // Auth Protocol (0x800)
 // ==========================================
+#define AUTH_NEGOTIATE 0x00
 #define AUTH_RPC 0x01
 #define AUTH_GET_TICKET 0x02
 #define AUTH_LOGOUT 0x03
 #define AUTH_PROXY_CALL 0x04
+#define AUTH_VALIDATE_TICKET 0x05
 #define AUTH_GET_IDENTITY 0x10
 #define AUTH_SET_IDENTITY 0x11
-#define AUTH_SET_GROUPS 0x12
+#define AUTH_CHECK_PERMISSION 0x20
+#define AUTH_UPSERT_POLICY 0x21
+#define AUTH_DELETE_POLICY 0x22
+#define AUTH_SET_POLICY_BACKEND 0x23
+#define AUTH_CLEAR_POLICY_BACKEND 0x24
+#define AUTH_GET_POLICY_BACKEND_STATUS 0x25
+
+typedef struct
+{
+    uint32_t uid;
+    uint32_t gid;
+    uint32_t euid;
+    uint32_t egid;
+} glenda_identity_info_t;
+
+typedef struct
+{
+    uint8_t allowed;
+    uint8_t reserved[3];
+    uint32_t ttl_ms;
+} glenda_permission_decision_t;
+
+typedef struct
+{
+    uint32_t subject;
+    uint8_t effect;
+    uint8_t reserved[3];
+    uint32_t ttl_ms;
+} glenda_policy_rule_t;
+
+typedef struct
+{
+    uint8_t external_attached;
+    uint8_t reserved[3];
+    uint32_t generation;
+} glenda_policy_backend_status_t;
+
+// ==========================================
+// Time Protocol (0x900)
+// ==========================================
+#define TIME_NOW 0x01
+#define TIME_SLEEP 0x02
+#define TIME_ADJ_TIME 0x03
+#define TIME_MONO_NOW 0x04
+
+// ==========================================
+// Volume Protocol (0xA00)
+// ==========================================
+#define VOLUME_GET_DEVICE 0x01
+#define VOLUME_GET_INFO 0x02
+
+typedef struct
+{
+    size_t size;
+    uint32_t block_size;
+    uint8_t fs_type[16];
+} glenda_volume_info_t;
+
+// ==========================================
+// Terminal Protocol (0xB00)
+// ==========================================
+#define TERM_PUT_STR 0x01
+#define TERM_GET_STR 0x02
+#define TERM_GET_CHAR 0x03
+#define TERM_PUT_CHAR 0x04
+#define TERM_POLL_READ 0x05
+#define TERM_GET_URING 0x11
+#define TERM_SET_MODE 0x12
+#define TERM_GET_WINSIZE 0x13
+#define TERM_SET_WINSIZE 0x14
+#define TERM_SET_DISPLAY 0x15
+#define TERM_GET_TERMIOS 0x16
+#define TERM_SET_TERMIOS 0x17
+#define TERM_GET_PGRP 0x18
+#define TERM_SET_PGRP 0x19
+#define TERM_STREAM_READ 0x40
+#define TERM_STREAM_WRITE 0x41
+#define TERM_STREAM_POLL 0x42
+#define TERM_STREAM_SET_MODE 0x43
+#define TERM_NATIVE_GET_EVENT 0x50
+#define TERM_NATIVE_POLL_EVENT 0x51
+#define TERM_NATIVE_PUT_TEXT 0x52
+#define VTS_ALLOC_VT 0x21
+#define VTS_FREE_VT 0x22
+#define VTS_LIST_VTS 0x23
+#define VTS_LIST_SEATS 0x24
+#define VTS_SWITCH_VT 0x25
+#define VTS_BIND_SEAT 0x26
+#define VTS_SET_EXCLUSIVE 0x27
+#define VTS_OPEN_VT 0x28
+#define VTS_GET_PTY_LOCK 0x29
+#define VTS_SET_PTY_LOCK 0x2A
+#define SEAT_BIND_DEVICE 0x30
+#define SEAT_UNBIND_DEVICE 0x31
+
+typedef struct
+{
+    uint16_t rows;
+    uint16_t cols;
+    uint16_t xpixel;
+    uint16_t ypixel;
+} glenda_window_size_t;
+
+// ==========================================
+// Input Protocol (0xC00)
+// ==========================================
+#define INPUT_GET_DEVICE 0x01
+#define INPUT_GET_INFO 0x02
+#define INPUT_SET_MODE 0x10
+#define INPUT_SET_GRAB 0x11
+#define INPUT_POLL_EVENT 0x12
 
 // ==========================================
 // Resource Protocol (0x300)

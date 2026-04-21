@@ -10,6 +10,9 @@ static const glenda_cap_ptr_t CAP_MON = 4;
 static const glenda_cap_ptr_t CAP_KERNEL = 5;
 static const glenda_cap_ptr_t CAP_REPLY = 10;
 static const glenda_cap_ptr_t CAP_APE = 11;
+static const glenda_cap_ptr_t CAP_CONSOLE = 12;
+static const glenda_cap_ptr_t CAP_RECV = 7;
+static const glenda_cap_ptr_t CAP_ENDPOINT = 8;
 
 typedef enum
 {
